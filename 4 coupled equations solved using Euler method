@@ -1,0 +1,60 @@
+import numpy as np
+import matplotlib.pyplot as plt
+Dx = 0.01  # define the grid size
+# initialize the variables
+w_start = 1.0 # Humidity ratio in secondary
+T_start = 0.38 # Temperature in water and conductor
+S_start = 1.4200 # Temperarure in secondary 
+P_start = 1.4200 # Temperature in peimary
+x_start = 0 # non-dimensional length
+x_end = 1
+
+n_steps = int(round((x_end-x_start)/Dx))  # time steps
+print(n_steps)
+
+# create an array
+x_arr = np.zeros(n_steps + 1)   # create an array of zeros for x
+w_arr = np.zeros(n_steps + 1)   # create an array of zeros for w
+T_arr = np.zeros(n_steps + 1)   
+S_arr = np.zeros(n_steps + 1)   # create an array of zeros for Y
+P_arr = np.zeros(n_steps + 1)   # create an array of zeros for P
+# initialize the array
+x_arr[0] = x_start              # add initial value of x to array
+w_arr[0] = w_start              # add initial value of w to array
+T_arr[0] = T_start             
+S_arr[0] = S_start              # add initial value of S to array
+P_arr[0] = P_start              # add initial value of P to array
+#Euler's method
+for i in range (1, n_steps + 1):
+   x = x_arr[i-1]
+   w = w_arr[i-1]                # moisture in the secondary
+   T = T_arr[i-1]                # T is temperature of water
+   S = S_arr[i-1]                # S is secondary temperature 
+   P = P_arr[i-1]                # P is primary temperature
+
+   dTdx = - 0.002180 * (2502.555 - 2.40515 * T) * (0.0000025530 - w) + (P - T) + (S - T) 
+   dwdx = 3.8100 * (0.0000025530 - w)     # calculate the derivative of w
+   dSdx = 1.27016  * (T - S)   # calculate the derivative of S
+                 
+   dPdx =  0.1890 * (T - P)                # calculate the derivative of P 
+   #dTdx = 0
+   w_arr[i] = w + Dx*dwdx
+   S_arr[i] = S + Dx*dSdx
+   P_arr[i] = P + Dx*dPdx
+   x_arr[i] = x + Dx
+   T_arr[i] = T + Dx*dTdx
+
+fig = plt.figure()                                      # create figure
+plt.plot(x_arr, w_arr,'y^', linewidth = 1, label = 'moi s')
+plt.plot(x_arr, S_arr,'g^', linewidth = 1, label = 'sec-Temp')    # plot S to x 
+plt.plot(x_arr, P_arr, 'ro--', linewidth = 1, label = '-Prim-Temp')
+#plt.plot(x_arr, T_arr, 'bo--', linewidth = 1, label = 'conductor-Temp')    # plot P to x
+plt.title('Temperature-variation', fontsize = 4)    # add some title to your plot
+plt.xlabel('x (Non-dimensional)', fontsize = 12)
+plt.ylabel('w(x), S(x), P(x), T(x)', fontsize = 12)
+plt.xticks(fontsize = 12)
+plt.yticks(fontsize = 12)
+plt.grid(True)                        # show grid
+plt.axis([x_start, x_end, -2, 5])     # show axes measures
+plt.legend()
+plt.show()
