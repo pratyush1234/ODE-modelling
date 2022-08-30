@@ -1,0 +1,57 @@
+import numpy as np
+import matplotlib.pyplot as plt
+Dt = 0.1               # timestep Delta t
+Y_start = 20            # initial Y
+P_start = 20            # initial P
+t_start = 0             # starttime
+t_end = 60              # endtime
+n_steps = int(round((t_end-t_start)/Dt))    # number of timesteps
+print(n_steps)
+
+Y_arr = np.zeros(n_steps + 1)   # create an array of zeros for Y
+P_arr = np.zeros(n_steps + 1)    # create an array of zeros for P
+t_arr = np.zeros(n_steps + 1)   # create an array of zeros for t
+dYdt = np.zeros(n_steps + 1)
+dPdt = np.zeros(n_steps + 1)
+t_arr[0] = t_start              # add starttime to array
+Y_arr[0] = Y_start              # add initial value of Y to array
+P_arr[0] = P_start              # add initial value of P to array
+
+# Euler's method
+for i in range (1, n_steps + 1):  
+   Y_arr[i] = Y_arr[i-1]
+   #print('Y=',Y)
+   P_arr[i] = P_arr[i-1]
+   t_arr[i] = t_arr[i-1]
+   dYdt[i] = -0.4*Y_arr[i]+0.02*P_arr[i]*Y_arr[i]
+   print('dYdt =',dYdt[i])
+   ea1 = abs((dYdt[i]-dYdt[i-1])/dYdt[i])
+   print('ea1 =',ea1)
+   if ea<0.01:
+     break
+   #print('dYdt =',dYdt[i])         # calculate the derivative of Y
+   #e = dYdt[i]-dYdt[i-1]/dYdt[i]
+   dPdt[i] = 0.8*P_arr[i] - 0.01*P_arr[i]*P_arr[i]-0.1*P_arr[i]*Y_arr[i]  # calculate the derivative of Y
+   print('dPdt =',dPdt[i])
+   ea2 = abs((dPdt[i]-dPdt[i-1])/dPdt[i])
+   print('ea2 =',ea2)
+   if ea<0.01:
+     break
+
+   Y_arr[i] = Y_arr[i-1] + Dt*dYdt[i]  # calc. Y at next timestep,add to array
+   P_arr[i] = P_arr[i-1] + Dt*dPdt[i]  # calc. P at next timestep,add to array
+   t_arr[i] = t_arr[i-1] + Dt       # add new value of t to array
+
+   # plotting the result
+fig = plt.figure()                                  # create figure
+plt.plot(t_arr, Y_arr, linewidth = 4, label = 'Y')    # plot Y to t 
+plt.plot(t_arr, P_arr, linewidth = 4, label = 'P')    # plot P to t
+plt.title('Title', fontsize = 12)    # add some title to your plot
+plt.xlabel('t (in seconds)', fontsize = 12)
+plt.ylabel('Y(t), P(t)', fontsize = 12)
+plt.xticks(fontsize = 12)
+plt.yticks(fontsize = 12)
+plt.grid(True)                        # show grid
+plt.axis([t_start, t_end, 0, 50])     # show axes measures
+plt.legend()
+plt.show()
